@@ -1,4 +1,4 @@
-# E-Commerce Web Store Project
+# E-Commerce Website Project
 
 ### Project Duration: January 10, 2021 - February 2021 (Expected Date of Completion)
 

@@ -1,6 +1,6 @@
 # E-Commerce Website Project
 
-### Project Duration: December 23, 2020 - mid to late January 2021 
+### Project Duration: December 16, 2020 - mid to late January 2021 
 ### Project Task
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The aim of this project is to create an e-Commerce site using NextJS (React) in the frontend and Commerce.js as a third party API for the backend include features such as product list and details, shopping cart and checking out, and payment using Stripe.
 

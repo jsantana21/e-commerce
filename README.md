@@ -3,7 +3,7 @@
 ### Project Duration: January 10, 2021 - February 2021 (Expected Date of Completion)
 
 ### Project Task
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The aim of this project is to create an e-Commerce site using React and Javascript in the frontend and Commerce.js as a third party API for the backend include features such as product list and details, shopping cart and checking out, and payment using Stripe.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The aim of this project is to create an e-Commerce site using NextJS (React) in the frontend and Commerce.js as a third party API for the backend include features such as product list and details, shopping cart and checking out, and payment using Stripe.
 
 
 ### Background

@@ -13,7 +13,14 @@ export default function Home(props) {
 
       <main className={styles.main}>
 
-        
+        {products.map((product) => (
+          <div key ={product.id}>
+            <img src = {product.media.source} alt = {product.name}/>
+            <p>{product.name}</p>
+            <p>{product.price.formatted_with_symbol}</p>
+
+          </div>
+        ))}
      
       </main>
 

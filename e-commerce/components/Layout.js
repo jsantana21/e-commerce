@@ -1,7 +1,9 @@
-import { Toolbar } from '@material-ui/core';
-import { ThemeProvider, CssBaseline } from '@material-ui/core';
+import { ThemeProvider, CssBaseline, AppBar, Toolbar, Link, Container, Box, Typography } from '@material-ui/core';
+import Head from 'next/head';
 import React from 'react';
 import { theme, useStyles } from '../utils/styles';
+import NextLink from 'next/link';
+
 
 export default function Layout({
     children,
@@ -39,6 +41,18 @@ export default function Layout({
 
                   </Toolbar>
               </AppBar>
+              <Container component="main" className={classes.main}>
+                {children}
+              </Container>
+              <Container maxWidth="md" component="footer">
+                <Box mt={5}>
+                    <Typography variant="body2" color="textSecondary" align="center">
+                        {'© '}
+                            E-Tron 2021
+                        {'.'}
+                    </Typography>
+                </Box>
+            </Container>
               </ThemeProvider>
           </React.Fragment>
       ) 

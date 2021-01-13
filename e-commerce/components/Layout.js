@@ -30,6 +30,7 @@ export default function Layout({
                 className={classes.appBar}
               >
                   <Toolbar className = {classes.toolbar}>
+                    <NextLink href = '/'>
                       <Link 
                         variant = "h6"
                         color = "inherit"
@@ -38,7 +39,20 @@ export default function Layout({
                         className = {classes.toolbarTitle}>
                             E-Tron
                       </Link>
+                    </NextLink>
+                    <nav>
+                        <NextLink href= "/cart">
+                            <Link
+                            variant = "button"
+                            color = "textPrimary"
+                            href = "/cart"
+                            className = {classes.link}>
+                                Cart
+                            </Link>
 
+                        </NextLink>
+
+                    </nav>
                   </Toolbar>
               </AppBar>
               <Container component="main" className={classes.main}>

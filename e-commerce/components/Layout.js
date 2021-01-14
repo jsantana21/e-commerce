@@ -31,22 +31,13 @@ export default function Layout({
               >
                   <Toolbar className = {classes.toolbar}>
                     <NextLink href = '/'>
-                      <Link 
-                        variant = "h6"
-                        color = "inherit"
-                        noWrap
-                        href= "/"
-                        className = {classes.toolbarTitle}>
+                      <Link variant = "h6" color = "inherit" noWrap href= "/" className = {classes.toolbarTitle}>
                             E-Tron
                       </Link>
                     </NextLink>
                     <nav>
                         <NextLink href= "/cart">
-                            <Link
-                            variant = "button"
-                            color = "textPrimary"
-                            href = "/cart"
-                            className = {classes.link}>
+                            <Link variant = "button" color = "textPrimary" href = "/cart" className = {classes.link}>
                                 Cart
                             </Link>
 
@@ -61,9 +52,7 @@ export default function Layout({
               <Container maxWidth="md" component="footer">
                 <Box mt={5}>
                     <Typography variant="body2" color="textSecondary" align="center">
-                        {'© '}
-                            E-Tron 2021
-                        {'.'}
+                        {'© '} E-Tron 2021 {'.'}
                     </Typography>
                 </Box>
             </Container>

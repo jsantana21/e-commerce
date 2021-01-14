@@ -2,11 +2,15 @@ import Head from 'next/head'
 import Layout from '../components/Layout';
 import styles from '../styles/Home.module.css'
 import getCommerce from '../utils/commerce'
+import { Alert } from '@material-ui/lab';
 
 export default function Home(props) {
   const { products } = props;
   return (
     <Layout title = "Home" commercePublicKey ={props.commercePublicKey}>
+      {
+        products.length === 0 && <Alert>No available products...</Alert>
+      }
       <main className={styles.main}>
 
       {products.map((product) => (

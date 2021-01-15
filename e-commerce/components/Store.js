@@ -1,11 +1,12 @@
 import { FlareSharp } from '@material-ui/icons';
 import React, {createContext, useReducer} from 'react';
+//import { CART_RETRIEVE_REQUEST, CART_RETRIEVE_SUCCESS } from '../utils/constants';
 
 export const Store = createContext();
 
 function reducer(state, action){
     switch (action.type){
-        case CART_RETRIEVE_REQUEST:
+        /*case CART_RETRIEVE_REQUEST:
             return {
                 ...state,
                 cart: {loading: true},
@@ -14,7 +15,7 @@ function reducer(state, action){
             return {
                 ...state,
                 cart: {loading: false, data: action.payload}
-            };
+            };*/
     default:
         return state;
     }

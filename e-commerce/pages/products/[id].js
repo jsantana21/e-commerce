@@ -7,6 +7,7 @@ import { useContext, useState } from 'react';
 import { useStyles } from '../../utils/styles';
 import { Store } from '../../components/Store';
 import { CART_RETRIEVE_SUCCESS } from '../../utils/constants';
+import { Router } from 'next/router';
 
 export default function Product(props) {
   const { product } = props;
@@ -28,11 +29,11 @@ export default function Product(props) {
           quantity: quantity,
         });
         dispatch({ type: CART_RETRIEVE_SUCCESS, payload: cartData.cart });
-        //Router.push('/cart');
+        Router.push('/cart');
       } else {
         const cartData = await commerce.cart.add(product.id, quantity);
         dispatch({ type: CART_RETRIEVE_SUCCESS, payload: cartData.cart });
-        //Router.push('/cart');
+        Router.push('/cart');
       }
   }
   return (

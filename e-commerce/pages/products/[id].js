@@ -7,7 +7,7 @@ import { useContext, useState } from 'react';
 import { useStyles } from '../../utils/styles';
 import { Store } from '../../components/Store';
 import { CART_RETRIEVE_SUCCESS } from '../../utils/constants';
-import { Router } from 'next/router';
+import Router  from 'next/router';
 
 export default function Product(props) {
   const { product } = props;

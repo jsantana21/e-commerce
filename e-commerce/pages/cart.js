@@ -2,7 +2,7 @@ import React from 'react';
 import Layout from '../components/Layout';
 import getCommerce from '../utils/commerce'
 import { Alert } from '@material-ui/lab';
-import { Grid, Box, Card, CardActionArea, CardContent, CardMedia, Slide, Select, Typography } from '@material-ui/core';
+import { Grid, Card, Slide, Select, Typography } from '@material-ui/core';
 import Link  from 'next/link';
 import { useStyles } from '../utils/styles';
 import { useContext } from 'react';
@@ -13,19 +13,41 @@ import { Button } from '@material-ui/core';
 import { List } from '@material-ui/core';
 import { ListItem } from '@material-ui/core';
 import dynamic from 'next/dynamic';
+import { CART_RETRIEVE_SUCCESS } from '../utils/constants';
+import { Router } from 'next/router';
+import { CircularProgress } from '@material-ui/core';
 
 
 function Cart(props) {
   const classes = useStyles();
   const { state, dispatch} = useContext(Store);
-  const { products } = props;
+  const { cart } = state;
+
+  const removeFromCartHandler = async (lineItem) => {
+    const commerce = getCommerce(props.commercePublicKey);
+    const cartData = await commerce.cart.remove(lineItem.id);
+    dispatch({ type: CART_RETRIEVE_SUCCESS, payload: cartData.cart });
+  };
+  
+  const quantityChangeHandler = async (lineItem, quantity) => {
+    const commerce = getCommerce(props.commercePublicKey);
+    const cartData = await commerce.cart.update(lineItem.id, {
+      quantity,
+    });
+    dispatch({ type: CART_RETRIEVE_SUCCESS, payload: cartData.cart });
+  };
+
+  const proccessToCheckoutHandler = () => {
+    Router.push('/checkout');
+  };
+
   return (
     <Layout title = "Cart" commercePublicKey ={props.commercePublicKey}>
         {cart.loading ? (
             <CircularProgress/>
         ): cart.data.line_items.length === 0 ? (
             <Alert icon={false} severity="error">
-                Empty Cart <Link href="/"> Go shop to fill up the Cart</Link>
+                Your Shopping Cart is empty! <Link href="/"> Go shop to fill up the Cart!</Link>
             </Alert>
         ):(
             <React.Fragment>
@@ -42,7 +64,7 @@ function Cart(props) {
                                             <TableCell>Name</TableCell>
                                             <TableCell align="right">Quantity</TableCell>
                                             <TableCell align="right">Price</TableCell>
-                                            <TableCell>Action</TableCell>
+                                            <TableCell align="right">Remove</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>

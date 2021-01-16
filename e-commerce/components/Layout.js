@@ -1,8 +1,13 @@
 import { ThemeProvider, CssBaseline, AppBar, Toolbar, Link, Container, Box, Typography } from '@material-ui/core';
 import Head from 'next/head';
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import { theme, useStyles } from '../utils/styles';
 import NextLink from 'next/link';
+import getCommerce from '../utils/commerce';
+import { CART_RETRIEVE_REQUEST, CART_RETRIEVE_SUCCESS } from '../utils/constants';
+import { CircularProgress } from '@material-ui/core';
+import { Badge } from '@material-ui/core';
+import { Store } from './Store';
 
 
 export default function Layout({
@@ -11,6 +16,19 @@ export default function Layout({
     title = 'E-Tron',
   }) {
       const classes = useStyles();
+      const { state, dispatch } = useContext(Store);
+      const { cart } = state;
+
+      useEffect(() => {
+        const fetchCart = async () => {
+          const commerce = getCommerce(commercePublicKey);
+          dispatch({ type: CART_RETRIEVE_REQUEST });
+          const cartData = await commerce.cart.retrieve();
+          dispatch({ type: CART_RETRIEVE_SUCCESS, payload: cartData });
+        };
+        fetchCart();
+      }, []);
+
       return(
           <React.Fragment>
               <Head>
@@ -38,11 +56,17 @@ export default function Layout({
                     <nav>
                         <NextLink href= "/cart">
                             <Link variant = "button" color = "textPrimary" href = "/cart" className = {classes.link}>
+                            {cart.loading ? (
+                            <CircularProgress />
+                            ) : cart.data.total_items > 0 ? (
+                            <Badge badgeContent={cart.data.total_items} color="primary">
                                 Cart
+                                </Badge>
+                                ) : (
+                                    'Cart'
+                                    )}
                             </Link>
-
                         </NextLink>
-
                     </nav>
                   </Toolbar>
               </AppBar>

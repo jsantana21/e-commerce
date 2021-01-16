@@ -3,8 +3,10 @@ import getCommerce from '../../utils/commerce'
 import { Alert } from '@material-ui/lab';
 import { Grid, Button, Box, Card, List, ListItem, MenuItem, Select, Slide, Typography } from '@material-ui/core';
 import Link  from 'next/link';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useStyles } from '../../utils/styles';
+import { Store } from '../../components/Store';
+import { CART_RETRIEVE_SUCCESS } from '../../utils/constants';
 
 export default function Product(props) {
   const { product } = props;
@@ -12,12 +14,29 @@ export default function Product(props) {
   const [quantity, setQuantity] = useState(1);
 
   const classes = useStyles();
+  const { state, dispatch } = useContext(Store);
+  const { userInfo, cart } = state;
+
   
   const addToCartHandler = async() => {
-      console.log('Finish Add to Cart function')
+      const commerce = getCommerce(props.commercePublicKey);
+      const lineItem = cart.data.line_items.find(
+        (x) => x.product_id === product.id
+      );
+      if (lineItem) {
+        const cartData = await commerce.cart.update(lineItem.id, {
+          quantity: quantity,
+        });
+        dispatch({ type: CART_RETRIEVE_SUCCESS, payload: cartData.cart });
+        //Router.push('/cart');
+      } else {
+        const cartData = await commerce.cart.add(product.id, quantity);
+        dispatch({ type: CART_RETRIEVE_SUCCESS, payload: cartData.cart });
+        //Router.push('/cart');
+      }
   }
   return (
-    <Layout title = "Home" commercePublicKey ={props.commercePublicKey}>
+    <Layout title = {product.name} commercePublicKey ={props.commercePublicKey}>
         <Slide direction = "up" in={true}>
             <Grid container spacing={1}>
                 <Grid item md={6}>

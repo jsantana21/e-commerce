@@ -9,9 +9,13 @@ import { useContext } from 'react';
 import { Store } from '../components/Store';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
 import { MenuItem } from '@material-ui/core';
+import { Button } from '@material-ui/core';
+import { List } from '@material-ui/core';
+import { ListItem } from '@material-ui/core';
+import dynamic from 'next/dynamic';
 
 
-export default function Cart(props) {
+function Cart(props) {
   const classes = useStyles();
   const { state, dispatch} = useContext(Store);
   const { products } = props;
@@ -70,14 +74,44 @@ export default function Cart(props) {
                                                 <TableCell align="right">
                                                     {cartItem.price.formatted_with_symbol}
                                                 </TableCell>
-                                                <TableCell>
-                                                    
+                                                <TableCell align="right">
+                                                    <Button
+                                                    onClick={() => removeFromCartHandler(cartItem)}
+                                                    variant="contained"
+                                                    color="secondary">
+                                                        x
+                                                    </Button>
                                                 </TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>
                                 </Table>
                             </TableContainer>
+                        </Grid>
+                        <Grid item md={3} xs={12}>
+                            <Card className={classes.card}>
+                                <List>
+                                    <ListItem>
+                                        <Grid container>
+                                            <Typography variant="h6">
+                                                Subtotal: {cart.data.subtotal.formatted_with_symbol}
+                                            </Typography>
+                                        </Grid>
+                                    </ListItem>
+                                    <ListItem>
+                                        {cart.data.total_items > 0 && (
+                                        <Button
+                                        type="button"
+                                        fullWidth
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={proccessToCheckoutHandler}>
+                                            Checkout
+                                        </Button>
+                                        )}
+                                    </ListItem>
+                                </List>
+                            </Card>
                         </Grid>
                     </Grid>
                 </Slide>
@@ -87,12 +121,6 @@ export default function Cart(props) {
   );
 }
 
-export async function getStaticProps() {
-  const commerce = getCommerce();
-  const { data: products } = await commerce.products.list();
-  return {
-    props: {
-      products,
-    },
-  };
-}
+export default dynamic(() => Promise.resolve(Cart), { //NextJS function
+    ssr: false, //render only on client-side not back-end
+  });

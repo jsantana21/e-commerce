@@ -14,7 +14,7 @@ import { List } from '@material-ui/core';
 import { ListItem } from '@material-ui/core';
 import dynamic from 'next/dynamic';
 import { CART_RETRIEVE_SUCCESS } from '../utils/constants';
-import { Router } from 'next/router';
+import Router from 'next/router';
 import { CircularProgress } from '@material-ui/core';
 
 

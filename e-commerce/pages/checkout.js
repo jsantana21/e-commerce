@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import getCommerce from '../utils/commerce'
 import { Alert } from '@material-ui/lab';
@@ -31,7 +31,26 @@ function Checkout(props) {
   const { state, dispatch} = useContext(Store);
   const { cart } = state;
 
-  //User Data
+  useEffect(() => {
+    if (!cart.loading) {
+      generateCheckoutToken();
+    }
+  }, [cart.loading]);
+
+  const generateCheckoutToken = async () => {
+    if (cart.data.line_items.length) {
+      const commerce = getCommerce(props.commercePublicKey);
+      const token = await commerce.checkout.generateToken(cart.data.id, {
+        type: 'cart',
+      });
+      setCheckoutToken(token);
+      fetchShippingCountries(token.id);
+    } else {
+      Router.push('/cart');
+    }
+  };
+
+  //Customer Data
   const [firstName, setFirstName] = useState(dev ? 'John' : '');
   const [lastName, setLastName] = useState(dev ? 'Doe' : '');
   const [email, setEmail] = useState(dev ? 'johndoe@email.com' : '');
@@ -59,6 +78,12 @@ function Checkout(props) {
     dev ? '10001' : ''
   );
 
+  // Shipping Data
+  const [shippingCountries, setShippingCountries] = useState({});
+  const [shippingSubdivisions, setShippingSubdivisions] = useState({});
+  const [shippingOptions, setShippingOptions] = useState([]);
+  const [shippingOption, setShippingOption] = useState({});
+
   //Step Process
   const [activeStep, setActiveStep] = React.useState(0);
   const steps = [ 'Customer Information', 'Shipping Details', 'Payment Information'];
@@ -73,6 +98,8 @@ function Checkout(props) {
 
   const [errors, setErrors] = useState([]);
 
+  const [checkoutToken, setCheckoutToken] = useState({});
+
   const handleBack = () => {
     setErrors([]);
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
@@ -82,6 +109,14 @@ function Checkout(props) {
     const currentValue = e.target.value;
     setShippingCountry(e.target.value);
     fetchSubdivisions(currentValue);
+  };
+
+  const fetchShippingCountries = async (checkoutTokenId) => {
+    const commerce = getCommerce(props.commercePublicKey);
+    const countries = await commerce.services.localeListShippingCountries(
+      checkoutTokenId
+    );
+    setShippingCountries(countries.countries);
   };
 
   const fetchSubdivisions = async (countryCode) => {
@@ -96,6 +131,12 @@ function Checkout(props) {
     const currentValue = e.target.value;
     setShippingStateProvince(currentValue);
     fetchShippingOptions(checkoutToken.id, shippingCountry, currentValue);
+  };
+
+  const handleShippingOptionChange = (e) => {
+    const currentValue = e.target.value;
+    setShippingOption(currentValue);
+    console.log(currentValue);
   };
 
   const fetchShippingOptions = async (
@@ -116,6 +157,8 @@ function Checkout(props) {
     setShippingOptions(options);
     console.log(shippingOption);
   };
+
+
 
 
   function getStepContent(step) {

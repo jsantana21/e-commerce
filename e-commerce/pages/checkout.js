@@ -21,6 +21,8 @@ import { Step } from '@material-ui/core';
 import { StepLabel } from '@material-ui/core';
 import { Box } from '@material-ui/core';
 import { TextField } from '@material-ui/core';
+import { FormControl } from '@material-ui/core';
+import { InputLabel } from '@material-ui/core';
 
 const dev = process.env.NODE_ENV === 'development';
 
@@ -75,6 +77,46 @@ function Checkout(props) {
     setErrors([]);
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
+
+  const handleShippingCountryChange = (e) => {
+    const currentValue = e.target.value;
+    setShippingCountry(e.target.value);
+    fetchSubdivisions(currentValue);
+  };
+
+  const fetchSubdivisions = async (countryCode) => {
+    const commerce = getCommerce(props.commercePublicKey);
+    const subdivisions = await commerce.services.localeListSubdivisions(
+      countryCode
+    );
+    setShippingSubdivisions(subdivisions.subdivisions);
+  };
+
+  const handleSubdivisionChange = (e) => {
+    const currentValue = e.target.value;
+    setShippingStateProvince(currentValue);
+    fetchShippingOptions(checkoutToken.id, shippingCountry, currentValue);
+  };
+
+  const fetchShippingOptions = async (
+    checkoutTokenId,
+    country,
+    stateProvince = null
+  ) => {
+    const commerce = getCommerce(props.commercePublicKey);
+    const options = await commerce.checkout.getShippingOptions(
+      checkoutTokenId,
+      {
+        country: country,
+        region: stateProvince,
+      }
+    );
+    const shippingOption = options[0] ? options[0].id : null;
+    setShippingOption(shippingOption);
+    setShippingOptions(options);
+    console.log(shippingOption);
+  };
+
 
   function getStepContent(step) {
     switch (step) {

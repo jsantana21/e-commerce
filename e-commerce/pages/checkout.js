@@ -445,9 +445,41 @@ function Checkout(props) {
                 </form>
                 </Card>
             </Grid>
-            
-
-
+            <Grid item md={4}>
+                <Card>
+                    <List>
+                        <ListItem>
+                            <Typography variant="h2"> Order Summary</Typography>
+                        </ListItem>
+                        {cart.data.line_items.map((lineItem) => (
+                        <ListItem key={lineItem.id}>
+                            <Grid container>
+                                <Grid xs={6} item>
+                                    {lineItem.quantity} x {lineItem.name}
+                                </Grid>
+                                <Grid xs={6} item>
+                                    <Typography align="right">
+                                        {lineItem.line_total.formatted_with_symbol}
+                                    </Typography>
+                                </Grid>
+                            </Grid>
+                        </ListItem>
+                        ))}
+                        <ListItem>
+                            <Grid container>
+                                <Grid xs={6} item>
+                                    Subtotal
+                                </Grid>
+                                <Grid xs={6} item>
+                                    <Typography align="right">
+                                        {cart.data.subtotal.formatted_with_symbol}
+                                    </Typography>
+                                </Grid>
+                            </Grid>
+                        </ListItem>
+                    </List>
+                </Card>
+            </Grid>
         </Grid>
       )}
     </Layout>

@@ -13,7 +13,7 @@ import { Button } from '@material-ui/core';
 import { List } from '@material-ui/core';
 import { ListItem } from '@material-ui/core';
 import dynamic from 'next/dynamic';
-import { CART_RETRIEVE_SUCCESS } from '../utils/constants';
+import { CART_RETRIEVE_SUCCESS, ORDER_SET } from '../utils/constants';
 import { Router } from 'next/router';
 import { CircularProgress } from '@material-ui/core';
 import { Stepper } from '@material-ui/core';
@@ -145,6 +145,21 @@ function Checkout(props) {
       }
       setErrors(errList);
     }
+  };
+
+  const refreshCart = async () => {
+    const commerce = getCommerce(props.commercePublicKey);
+
+    commerce.cart
+      .refresh()
+      .then((newCart) => {
+        this.setState({
+          cart: newCart,
+        });
+      })
+      .catch((error) => {
+        console.log('ERROR: Your cart was NOT able to refresh', error);
+      });
   };
 
   const [errors, setErrors] = useState([]);

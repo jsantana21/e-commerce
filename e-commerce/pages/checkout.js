@@ -20,23 +20,23 @@ function Checkout(props) {
   const [checkoutToken, setCheckoutToken] = useState({});
 
   // Customer Data
-  const [firstName, setFirstName] = useState(dev ? 'John' : '');
-  const [lastName, setLastName] = useState(dev ? 'Doe' : '');
-  const [email, setEmail] = useState(dev ? 'johndoe@email.com' : '');
+  const [firstName, setFirstName] = useState(dev ? '' : '');
+  const [lastName, setLastName] = useState(dev ? '' : '');
+  const [email, setEmail] = useState(dev ? '' : '');
 
   // Shipping Data
-  const [shippingName, setShippingName] = useState(dev ? 'John Doe' : '');
+  const [shippingName, setShippingName] = useState(dev ? '' : '');
   const [shippingStreet, setShippingStreet] = useState(
-    dev ? '123 Fake St' : ''
+    dev ? '' : ''
   );
-  const [shippingCity, setShippingCity] = useState(dev ? 'New York City' : '');
+  const [shippingCity, setShippingCity] = useState(dev ? '' : '');
   const [shippingStateProvince, setShippingStateProvince] = useState(
-    dev ? 'NY' : ''
+    dev ? '' : ''
   );
   const [shippingPostalZipCode, setShippingPostalZipCode] = useState(
-    dev ? '10001' : ''
+    dev ? '' : ''
   );
-  const [shippingCountry, setShippingCountry] = useState(dev ? 'US' : '');
+  const [shippingCountry, setShippingCountry] = useState(dev ? '' : '');
 
   // Payment Data
   const [cardNum, setCardNum] = useState(dev ? '4242 4242 4242 4242' : '');
@@ -262,92 +262,36 @@ function Checkout(props) {
             <FormControl className={classes.formControl}>
               <InputLabel id="shippingOption-label">Shipping Option</InputLabel>
 
-              <Select
-                labelId="shippingOption-label"
-                id="shippingOption"
-                label="Shipping Option"
-                fullWidth
-                onChange={handleShippingOptionChange}
-                value={shippingOption}
-                required
-                className={classes.mt1}
-              >
+              <Select labelId="shippingOption-label" id="shippingOption" label="Shipping Option" fullWidth onChange={handleShippingOptionChange} value={shippingOption} required className={classes.mt1}>
                 {shippingOptions.map((method, index) => (
-                  <MenuItem
-                    value={method.id}
-                    key={index}
-                  >{`${method.description} - $${method.price.formatted_with_code}`}</MenuItem>
+                  <MenuItem value={method.id} key={index}>
+                      {`${method.description} - $${method.price.formatted_with_code}`}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
           </>
         );
       case 2:
-        return (
+        return ( // Payment Card Data Input
           <>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="cardNum"
-              label="Card Number"
-              name="cardNum"
-              value={cardNum}
-              onChange={(e) => setCardNum(e.target.value)}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="expMonth"
-              label="Expiry Month"
-              name="expMonth"
-              value={expMonth}
-              onChange={(e) => setExpMonth(e.target.value)}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="expYear"
-              label="Expiry Year"
-              name="expYear"
-              value={expYear}
-              onChange={(e) => setExpYear(e.target.value)}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="cvv"
-              label="CVV"
-              name="cvv"
-              value={cvv}
-              onChange={(e) => setCvv(e.target.value)}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="billingPostalZipcode"
-              label="Postal/Zip Code"
-              name="postalCode"
-              value={billingPostalZipcode}
-              onChange={(e) => setBillingPostalZipcode(e.target.value)}
-            />
+            <TextField variant="outlined" margin="normal" required fullWidth id="cardNum" label="Card Number" name="cardNum" value={cardNum} onChange={(e) => setCardNum(e.target.value)}/>
+            
+            <TextField variant="outlined" margin="normal" required fullWidth id="expMonth" label="Expiry Month" name="expMonth" value={expMonth} onChange={(e) => setExpMonth(e.target.value)}/>
+            
+            <TextField variant="outlined" margin="normal" required fullWidth id="expYear" label="Expiry Year" name="expYear" value={expYear} onChange={(e) => setExpYear(e.target.value)}/>
+            
+            <TextField variant="outlined" margin="normal" required fullWidth id="cvv" label="CVV" name="cvv" value={cvv} onChange={(e) => setCvv(e.target.value)}/>
+
+            <TextField variant="outlined" margin="normal" required fullWidth id="billingPostalZipcode" label="Postal/Zip Code" name="postalCode" value={billingPostalZipcode} onChange={(e) => setBillingPostalZipcode(e.target.value)}/>
           </>
         );
       default:
-        return 'Unknown step';
+        return 'Step ???';
     }
   }
 
-  const renderCheckoutForm = () => {
+  const renderCheckoutForm = () => { //Three Step Checkout Form 
     return (
       <form>
         <Stepper activeStep={activeStep} alternativeLabel>
@@ -409,7 +353,7 @@ function Checkout(props) {
     );
   };
 
-  const renderCheckoutSummary = () => {
+  const renderCheckoutSummary = () => { //Box to the right which shows summary of items about to be brought
     return (
       <>
         <List>

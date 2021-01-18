@@ -1,35 +1,57 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import getCommerce from '../utils/commerce';
 import Layout from '../components/Layout';
-import getCommerce from '../utils/commerce'
-import { Alert } from '@material-ui/lab';
-import { Grid, Card, Slide, Select, Typography } from '@material-ui/core';
-import Link  from 'next/link';
+import { Box, Button, Card, CircularProgress, FormControl, Grid, InputLabel, List, ListItem, MenuItem, Select, Step, StepLabel, Stepper, TextField, Typography, } from '@material-ui/core';
 import { useStyles } from '../utils/styles';
-import { useContext } from 'react';
+import { Alert } from '@material-ui/lab';
 import { Store } from '../components/Store';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
-import { MenuItem } from '@material-ui/core';
-import { Button } from '@material-ui/core';
-import { List } from '@material-ui/core';
-import { ListItem } from '@material-ui/core';
+import Router from 'next/router';
+import { ORDER_SET } from '../utils/constants';
 import dynamic from 'next/dynamic';
-import { CART_RETRIEVE_SUCCESS, ORDER_SET } from '../utils/constants';
-import { Router } from 'next/router';
-import { CircularProgress } from '@material-ui/core';
-import { Stepper } from '@material-ui/core';
-import { Step } from '@material-ui/core';
-import { StepLabel } from '@material-ui/core';
-import { Box } from '@material-ui/core';
-import { TextField } from '@material-ui/core';
-import { FormControl } from '@material-ui/core';
-import { InputLabel } from '@material-ui/core';
 
-const dev = process.env.NODE_ENV === 'development';
+const dev = process.env.NODE_ENV === 'development' || true; 
 
 function Checkout(props) {
   const classes = useStyles();
-  const { state, dispatch} = useContext(Store);
+  const { state, dispatch } = useContext(Store);
   const { cart } = state;
+
+  const [errors, setErrors] = useState([]);
+  const [checkoutToken, setCheckoutToken] = useState({});
+
+  // Customer Data
+  const [firstName, setFirstName] = useState(dev ? 'John' : '');
+  const [lastName, setLastName] = useState(dev ? 'Doe' : '');
+  const [email, setEmail] = useState(dev ? 'johndoe@email.com' : '');
+
+  // Shipping Data
+  const [shippingName, setShippingName] = useState(dev ? 'John Doe' : '');
+  const [shippingStreet, setShippingStreet] = useState(
+    dev ? '123 Fake St' : ''
+  );
+  const [shippingCity, setShippingCity] = useState(dev ? 'New York City' : '');
+  const [shippingStateProvince, setShippingStateProvince] = useState(
+    dev ? 'NY' : ''
+  );
+  const [shippingPostalZipCode, setShippingPostalZipCode] = useState(
+    dev ? '10001' : ''
+  );
+  const [shippingCountry, setShippingCountry] = useState(dev ? 'US' : '');
+
+  // Payment Data
+  const [cardNum, setCardNum] = useState(dev ? '4242 4242 4242 4242' : '');
+  const [expMonth, setExpMonth] = useState(dev ? '11' : '');
+  const [expYear, setExpYear] = useState(dev ? '2023' : '');
+  const [cvv, setCvv] = useState(dev ? '123' : '');
+  const [billingPostalZipcode, setBillingPostalZipcode] = useState(
+    dev ? '10001' : ''
+  );
+
+  // Shipping & Fulfillment Data
+  const [shippingCountries, setShippingCountries] = useState({});
+  const [shippingSubdivisions, setShippingSubdivisions] = useState({});
+  const [shippingOptions, setShippingOptions] = useState([]);
+  const [shippingOption, setShippingOption] = useState({});
 
   useEffect(() => {
     if (!cart.loading) {
@@ -50,50 +72,58 @@ function Checkout(props) {
     }
   };
 
-  //Customer Data
-  const [firstName, setFirstName] = useState(dev ? 'John' : '');
-  const [lastName, setLastName] = useState(dev ? 'Doe' : '');
-  const [email, setEmail] = useState(dev ? 'johndoe@email.com' : '');
+  const fetchShippingCountries = async (checkoutTokenId) => {
+    const commerce = getCommerce(props.commercePublicKey);
+    const countries = await commerce.services.localeListShippingCountries(
+      checkoutTokenId
+    );
+    setShippingCountries(countries.countries);
+  };
 
-  //Shipping Data
-  const [shippingName, setShippingName] = useState(dev ? 'John Doe' : '');
-  const [shippingStreet, setShippingStreet] = useState(
-    dev ? '123 Fake St' : ''
-  );
-  const [shippingCity, setShippingCity] = useState(dev ? 'New York City' : '');
-  const [shippingStateProvince, setShippingStateProvince] = useState(
-    dev ? 'NY' : ''
-  );
-  const [shippingPostalZipCode, setShippingPostalZipCode] = useState(
-    dev ? '10001' : ''
-  );
-  const [shippingCountry, setShippingCountry] = useState(dev ? 'USA' : '');
+  const fetchSubdivisions = async (countryCode) => {
+    const commerce = getCommerce(props.commercePublicKey);
+    const subdivisions = await commerce.services.localeListSubdivisions(
+      countryCode
+    );
+    setShippingSubdivisions(subdivisions.subdivisions);
+  };
 
-  //Payment Data
-  const [cardNum, setCardNum] = useState(dev ? '4242 4242 4242 4242' : '');
-  const [expMonth, setExpMonth] = useState(dev ? '11' : '');
-  const [expYear, setExpYear] = useState(dev ? '2023' : '');
-  const [cvv, setCvv] = useState(dev ? '123' : '');
-  const [billingPostalZipcode, setBillingPostalZipcode] = useState(
-    dev ? '10001' : ''
-  );
+  const fetchShippingOptions = async (
+    checkoutTokenId,
+    country,
+    stateProvince = null
+  ) => {
+    const commerce = getCommerce(props.commercePublicKey);
+    const options = await commerce.checkout.getShippingOptions(
+      checkoutTokenId,
+      {
+        country: country,
+        region: stateProvince,
+      }
+    );
 
-  // Shipping Data
-  const [shippingCountries, setShippingCountries] = useState({});
-  const [shippingSubdivisions, setShippingSubdivisions] = useState({});
-  const [shippingOptions, setShippingOptions] = useState([]);
-  const [shippingOption, setShippingOption] = useState({});
+    const shippingOption = options[0] ? options[0].id : null;
+    setShippingOption(shippingOption);
+    setShippingOptions(options);
+    console.log(shippingOption);
+  };
 
-  //Step Process
-  const [activeStep, setActiveStep] = React.useState(0);
-  const steps = [ 'Customer Information', 'Shipping Details', 'Payment Information'];
+  const handleShippingCountryChange = (e) => {
+    const currentValue = e.target.value;
+    setShippingCountry(e.target.value);
+    fetchSubdivisions(currentValue);
+  };
 
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  const handleSubdivisionChange = (e) => {
+    const currentValue = e.target.value;
+    setShippingStateProvince(currentValue);
+    fetchShippingOptions(checkoutToken.id, shippingCountry, currentValue);
+  };
 
-    if (activeStep === steps.length - 1) {
-      handleCaptureCheckout();
-    }
+  const handleShippingOptionChange = (e) => {
+    const currentValue = e.target.value;
+    setShippingOption(currentValue);
+    console.log(currentValue);
   };
 
   const handleCaptureCheckout = async () => {
@@ -162,168 +192,55 @@ function Checkout(props) {
       });
   };
 
-  const [errors, setErrors] = useState([]);
+  //Step Process
+  const [activeStep, setActiveStep] = React.useState(0);
+  const steps = getSteps();
 
-  const [checkoutToken, setCheckoutToken] = useState({});
+  const handleNext = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+
+    if (activeStep === steps.length - 1) {
+      handleCaptureCheckout();
+    }
+  };
 
   const handleBack = () => {
     setErrors([]);
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleShippingCountryChange = (e) => {
-    const currentValue = e.target.value;
-    setShippingCountry(e.target.value);
-    fetchSubdivisions(currentValue);
-  };
-
-  const fetchShippingCountries = async (checkoutTokenId) => {
-    const commerce = getCommerce(props.commercePublicKey);
-    const countries = await commerce.services.localeListShippingCountries(
-      checkoutTokenId
-    );
-    setShippingCountries(countries.countries);
-  };
-
-  const fetchSubdivisions = async (countryCode) => {
-    const commerce = getCommerce(props.commercePublicKey);
-    const subdivisions = await commerce.services.localeListSubdivisions(
-      countryCode
-    );
-    setShippingSubdivisions(subdivisions.subdivisions);
-  };
-
-  const handleSubdivisionChange = (e) => {
-    const currentValue = e.target.value;
-    setShippingStateProvince(currentValue);
-    fetchShippingOptions(checkoutToken.id, shippingCountry, currentValue);
-  };
-
-  const handleShippingOptionChange = (e) => {
-    const currentValue = e.target.value;
-    setShippingOption(currentValue);
-    console.log(currentValue);
-  };
-
-  const fetchShippingOptions = async (
-    checkoutTokenId,
-    country,
-    stateProvince = null
-  ) => {
-    const commerce = getCommerce(props.commercePublicKey);
-    const options = await commerce.checkout.getShippingOptions(
-      checkoutTokenId,
-      {
-        country: country,
-        region: stateProvince,
-      }
-    );
-    const shippingOption = options[0] ? options[0].id : null;
-    setShippingOption(shippingOption);
-    setShippingOptions(options);
-    console.log(shippingOption);
-  };
-
-
-
+  function getSteps() {
+    return ['Customer information', 'Shipping details', 'Payment information'];
+  }
 
   function getStepContent(step) {
     switch (step) {
       case 0:
-        return (
+        return ( //Customer Data Input
           <>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="firstName"
-              label="First Name"
-              name="firstName"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="lastName"
-              label="Last Name"
-              name="lastName"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email"
-              name="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+            <TextField variant="outlined" margin="normal" required fullWidth id="firstName" label="First Name" name="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)}/>
+            
+            <TextField variant="outlined" margin="normal" required fullWidth id="lastName" label="Last Name" name="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)}/>
+            
+            <TextField variant="outlined" margin="normal" required fullWidth id="email" label="Email" name="email" value={email} onChange={(e) => setEmail(e.target.value)}/>
           </>
         );
       case 1:
-        return (
+        return ( //Shipping Data Input
           <>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="shippingName"
-              label="Full Name"
-              name="name"
-              value={shippingName}
-              onChange={(e) => setShippingName(e.target.value)}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="shippingStreet"
-              label="Street"
-              name="address"
-              value={shippingStreet}
-              onChange={(e) => setShippingStreet(e.target.value)}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="shippingCity"
-              label="City"
-              name="city"
-              value={shippingCity}
-              onChange={(e) => setShippingCity(e.target.value)}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="shippingPostalZipCode"
-              label="Postal/Zip Code"
-              name="postalCode"
-              value={shippingPostalZipCode}
-              onChange={(e) => setShippingPostalZipCode(e.target.value)}
-            />
+            <TextField variant="outlined" margin="normal" required fullWidth id="shippingName" label="Full Name" name="name" value={shippingName} onChange={(e) => setShippingName(e.target.value)}/>
+            
+            <TextField variant="outlined" margin="normal" required fullWidth id="shippingStreet" label="Street" name="address" value={shippingStreet} onChange={(e) => setShippingStreet(e.target.value)}/>
+
+            <TextField variant="outlined" margin="normal" required fullWidth id="shippingCity" label="City" name="city" value={shippingCity} onChange={(e) => setShippingCity(e.target.value)}/>
+            
+            <TextField variant="outlined" margin="normal" required fullWidth id="shippingPostalZipCode" label="Postal/Zip Code" name="postalCode" value={shippingPostalZipCode} onChange={(e) => setShippingPostalZipCode(e.target.value)}/>
+            
             <FormControl className={classes.formControl}>
+
               <InputLabel id="shippingCountry-label">Country</InputLabel>
-              <Select
-                labelId="shippingCountry-label"
-                id="shippingCountry"
-                label="Country"
-                fullWidth
-                onChange={handleShippingCountryChange}
-                value={shippingCountry}
-              >
+
+              <Select labelId="shippingCountry-label" id="shippingCountry" label="Country" fullWidth onChange={handleShippingCountryChange} value={shippingCountry}>
                 {Object.keys(shippingCountries).map((index) => (
                   <MenuItem value={index} key={index}>
                     {shippingCountries[index]}
@@ -332,20 +249,9 @@ function Checkout(props) {
               </Select>
             </FormControl>
             <FormControl className={classes.formControl}>
-              <InputLabel id="shippingStateProvince-label">
-                State / Province
-              </InputLabel>
+              <InputLabel id="shippingStateProvince-label"> State / Province </InputLabel>
 
-              <Select
-                labelId="shippingStateProvince-label"
-                id="shippingStateProvince"
-                label="State/Province"
-                fullWidth
-                onChange={handleSubdivisionChange}
-                value={shippingStateProvince}
-                required
-                className={classes.mt1}
-              >
+              <Select labelId="shippingStateProvince-label" id="shippingStateProvince" label="State/Province" fullWidth onChange={handleSubdivisionChange} value={shippingStateProvince} required className={classes.mt1}>
                 {Object.keys(shippingSubdivisions).map((index) => (
                   <MenuItem value={index} key={index}>
                     {shippingSubdivisions[index]}
@@ -441,117 +347,127 @@ function Checkout(props) {
     }
   }
 
+  const renderCheckoutForm = () => {
+    return (
+      <form>
+        <Stepper activeStep={activeStep} alternativeLabel>
+          {steps.map((label) => (
+            <Step key={label}>
+              <StepLabel>{label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+        <Box>
+          {activeStep === steps.length ? (
+            errors && errors.length > 0 ? (
+              <Box>
+                <List>
+                  {errors.map((error) => (
+                    <ListItem key={error}>
+                      <Alert severity="error">{error}</Alert>
+                    </ListItem>
+                  ))}
+                </List>
+                <Box className={classes.mt1}>
+                  <Button onClick={handleBack} className={classes.button}>
+                    Back
+                  </Button>
+                </Box>
+              </Box>
+            ) : (
+              <Box>
+                <CircularProgress />
+                <Typography className={classes.instructions}>
+                  Confirming Order...
+                </Typography>
+              </Box>
+            )
+          ) : (
+            <Box>
+              {getStepContent(activeStep)}
+              <Box className={classes.mt1}>
+                <Button
+                  disabled={activeStep === 0}
+                  onClick={handleBack}
+                  className={classes.button}
+                >
+                  Back
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleNext}
+                  className={classes.button}
+                >
+                  {activeStep === steps.length - 1 ? 'Confirm Order' : 'Next'}
+                </Button>
+              </Box>
+            </Box>
+          )}
+        </Box>
+      </form>
+    );
+  };
 
+  const renderCheckoutSummary = () => {
+    return (
+      <>
+        <List>
+          <ListItem>
+            <Typography variant="h2">Order Summary</Typography>
+          </ListItem>
+
+          {cart.data.line_items.map((lineItem) => (
+            <ListItem key={lineItem.id}>
+              <Grid container>
+                <Grid xs={6} item>
+                  {lineItem.quantity} x {lineItem.name}
+                </Grid>
+                <Grid xs={6} item>
+                  <Typography align="right">
+                    {lineItem.line_total.formatted_with_symbol}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </ListItem>
+          ))}
+          <ListItem>
+            <Grid container>
+              <Grid xs={6} item>
+                Subtotal
+              </Grid>
+              <Grid xs={6} item>
+                <Typography align="right">
+                  {cart.data.subtotal.formatted_with_symbol}
+                </Typography>
+              </Grid>
+            </Grid>
+          </ListItem>
+        </List>
+      </>
+    );
+  };
 
   return (
-    <Layout title = "Checkout" commercePublicKey ={props.commercePublicKey}>
-        <Typography gutterBottom variant="h6" color="textPrimary" component="h1">
-            Checkout
-        </Typography>
-        {cart.loading ? (
+    <Layout title="Checkout" commercePublicKey={props.commercePublicKey}>
+      <Typography gutterBottom variant="h6" color="textPrimary" component="h1">
+        Checkout
+      </Typography>
+      {cart.loading ? (
         <CircularProgress />
-        ) : (
+      ) : (
         <Grid container spacing={2}>
-            <Grid item md={8}>
-                <Card className={classes.p1}>
-                <form>
-                    <Stepper activeStep={activeStep} alternativeLabel>
-                        {steps.map((label) => (
-                            <Step key={label}>
-                                <StepLabel>{label}</StepLabel>
-                            </Step>
-                        ))}
-                    </Stepper>
-                    <Box>
-                        {activeStep === steps.length ? (
-                        errors && errors.length > 0 ? (
-                            <Box>
-                                <List>
-                                    {errors.map((error) => (
-                                        <ListItem key={error}>
-                                            <Alert severity="error">{error}</Alert>
-                                        </ListItem>
-                                    ))}
-                                </List>
-                                <Box className={classes.mt1}>
-                                    <Button onClick={handleBack} className={classes.button}>
-                                        Back
-                                    </Button>
-                                </Box>
-                            </Box>
-                            ) : (
-                            <Box>
-                                <CircularProgress />
-                                <Typography className={classes.instructions}>
-                                    Confirming Order...
-                                </Typography>
-                            </Box>
-                            )
-                            ) : (
-                            <Box>
-                                {getStepContent(activeStep)}
-                                <Box className={classes.mt1}>
-                                    <Button
-                                    disabled={activeStep === 0}
-                                    onClick={handleBack}
-                                    className={classes.button}>
-                                        Back
-                                    </Button>
-                                    <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={handleNext}
-                                    className={classes.button}>
-                                        {activeStep === steps.length - 1 ? 'Confirm Order' : 'Next'}
-                                    </Button>
-                                </Box>
-                            </Box>
-                            )}
-                    </Box>
-                </form>
-                </Card>
-            </Grid>
-            <Grid item md={4}>
-                <Card>
-                    <List>
-                        <ListItem>
-                            <Typography variant="h2"> Order Summary</Typography>
-                        </ListItem>
-                        {cart.data.line_items.map((lineItem) => (
-                        <ListItem key={lineItem.id}>
-                            <Grid container>
-                                <Grid xs={6} item>
-                                    {lineItem.quantity} x {lineItem.name}
-                                </Grid>
-                                <Grid xs={6} item>
-                                    <Typography align="right">
-                                        {lineItem.line_total.formatted_with_symbol}
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-                        </ListItem>
-                        ))}
-                        <ListItem>
-                            <Grid container>
-                                <Grid xs={6} item>
-                                    Subtotal
-                                </Grid>
-                                <Grid xs={6} item>
-                                    <Typography align="right">
-                                        {cart.data.subtotal.formatted_with_symbol}
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-                        </ListItem>
-                    </List>
-                </Card>
-            </Grid>
+          <Grid item md={8}>
+            <Card className={classes.p1}>{renderCheckoutForm()}</Card> 
+          </Grid>
+          <Grid item md={4}>
+            <Card>{renderCheckoutSummary()}</Card>
+          </Grid>
         </Grid>
       )}
     </Layout>
   );
 }
-
-export default dynamic(() => Promise.resolve(Checkout), { //NextJS function
-    ssr: false, 
+export default dynamic(() => Promise.resolve(Checkout), {
+  ssr: false,
 });

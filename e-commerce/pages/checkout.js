@@ -92,9 +92,40 @@ function Checkout(props) {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
 
     if (activeStep === steps.length - 1) {
-      //handleCaptureCheckout();
+      handleCaptureCheckout();
     }
   };
+
+  const handleCaptureCheckout = async () => {
+    const orderData = {
+      line_items: checkoutToken.live.line_items,
+      customer: {
+        firstname: firstName,
+        lastname: lastName,
+        email: email,
+      },
+      shipping: {
+        name: shippingName,
+        street: shippingStreet,
+        town_city: shippingCity,
+        county_state: shippingStateProvince,
+        postal_zip_code: shippingPostalZipCode,
+        country: shippingCountry,
+      },
+      fulfillment: {
+        shipping_method: shippingOption,
+      },
+      payment: {
+        gateway: 'test_gateway', //used for testing only
+        card: {
+          number: cardNum,
+          expiry_month: expMonth,
+          expiry_year: expYear,
+          cvc: cvv,
+          postal_zip_code: billingPostalZipcode,
+        },
+      },
+    };
 
   const [errors, setErrors] = useState([]);
 

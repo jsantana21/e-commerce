@@ -1,5 +1,5 @@
 import React, {createContext, useReducer} from 'react';
-import { CART_RETRIEVE_REQUEST, CART_RETRIEVE_SUCCESS } from '../utils/constants';
+import { CART_RETRIEVE_REQUEST, CART_RETRIEVE_SUCCESS, ORDER_SET } from '../utils/constants';
 
 export const Store = createContext();
 
@@ -15,6 +15,11 @@ function reducer(state, action){
             ...state,
             cart: { loading: false, data: action.payload },
         };
+    case ORDER_SET:
+        return {
+            ...state,
+            order: action.payload,
+        };
     default:
         return state;
     }
@@ -22,7 +27,9 @@ function reducer(state, action){
 
 const initialState = {
     cart: { loading: true }, 
-    order: null,
+    order: typeof window !== 'undefined' && window.localStorage.getItem('order_receipt')
+    ? JSON.parse(window.localStorage.getItem('order_receipt'))
+    : null,
 }
 
 export function StoreProvider(props){

@@ -127,6 +127,26 @@ function Checkout(props) {
       },
     };
 
+    const commerce = getCommerce(props.commercePublicKey);
+    try {
+      const order = await commerce.checkout.capture(
+        checkoutToken.id,
+        orderData
+      );
+      dispatch({ type: ORDER_SET, payload: order });
+      localStorage.setItem('order_receipt', JSON.stringify(order));
+      await refreshCart();
+      Router.push('/confirmation');
+    } catch (err) {
+      const errList = [err.data.error.message];
+      const errs = err.data.error.errors;
+      for (const index in errs) {
+        errList.push(`${index}: ${errs[index]}`);
+      }
+      setErrors(errList);
+    }
+  };
+
   const [errors, setErrors] = useState([]);
 
   const [checkoutToken, setCheckoutToken] = useState({});

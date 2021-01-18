@@ -9,7 +9,7 @@ import Router from 'next/router';
 import { ORDER_SET } from '../utils/constants';
 import dynamic from 'next/dynamic';
 
-const dev = process.env.NODE_ENV === 'development' || true; 
+const dev = process.env.NODE_ENV === 'development' || true; //set in development mode...not to be used in production mode 
 
 function Checkout(props) {
   const classes = useStyles();

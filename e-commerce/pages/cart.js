@@ -1,6 +1,6 @@
 import React from 'react';
 import Layout from '../components/Layout';
-import getCommerce from '../utils/commerce'
+import getCommerce from '../utils/commerce';
 import { Alert } from '@material-ui/lab';
 import { Grid, Card, Slide, Select, Typography } from '@material-ui/core';
 import Link  from 'next/link';

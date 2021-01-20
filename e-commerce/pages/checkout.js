@@ -39,10 +39,10 @@ function Checkout(props) {
   const [shippingCountry, setShippingCountry] = useState(dev ? '' : '');
 
   // Payment Data
-  const [cardNum, setCardNum] = useState(dev ? '4242 4242 4242 4242' : '');
-  const [expMonth, setExpMonth] = useState(dev ? '11' : '');
-  const [expYear, setExpYear] = useState(dev ? '2023' : '');
-  const [cvv, setCvv] = useState(dev ? '123' : '');
+  const [cardNum, setCardNum] = useState(dev ? '0123 4567 8910 1112' : '');
+  const [expMonth, setExpMonth] = useState(dev ? '12' : '');
+  const [expYear, setExpYear] = useState(dev ? '2024' : '');
+  const [cvv, setCvv] = useState(dev ? '321' : '');
   const [billingPostalZipcode, setBillingPostalZipcode] = useState(
     dev ? '10001' : ''
   );

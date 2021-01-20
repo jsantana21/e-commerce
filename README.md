@@ -25,7 +25,7 @@
 
 
 #### Order Conformation Feature
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Once all the infomation is filled in, the user can click "Confirm Order" and after a moment the user will be redirected to an order confirmation page which summarizes the order along with an order number while the merchant, the person running the e-commerce site, will also get notified of the order placed by the user on CommerceJS (shown in the first gif). The user will get an email of the order confirmation as well as the merchant (shown in second gif).
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Once all the infomation is filled in, the user can click "Confirm Order" and after a moment the user will be redirected to an order confirmation page which summarizes the order along with an order number while the merchant, the person running the e-commerce site, will also get notified of the order placed by the user on CommerceJS (shown in the first gif). The user will also get an email of the order confirmation as well as the merchant (shown in second gif).
 <img src="https://github.com/jsantana21/e-commerce/blob/master/gif%20animations/OrderConfirmation.gif" /> 
 <img src="https://github.com/jsantana21/e-commerce/blob/master/gif%20animations/OrderConfirmationEmail.gif" /> 
 
